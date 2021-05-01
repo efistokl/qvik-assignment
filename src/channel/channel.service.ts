@@ -8,7 +8,7 @@ import {
   ChannelExistsException,
   ChannelNotFoundException,
 } from './channel.exception';
-import { isUniqueConstraintErrorSqlite } from 'src/helpers/uniqueConstraintErrorSqlite.helper';
+import { isUniqueConstraintErrorSqlite } from '../helpers/uniqueConstraintErrorSqlite.helper';
 
 @Injectable()
 export class ChannelService {
