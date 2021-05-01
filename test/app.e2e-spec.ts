@@ -25,4 +25,8 @@ describe('AppController (e2e)', () => {
   it('/channel (GET)', () => {
     return request(app.getHttpServer()).get('/channel').expect(200).expect([]);
   });
+
+  afterAll(async () => {
+    await app.close();
+  });
 });
