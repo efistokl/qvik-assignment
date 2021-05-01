@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseFilters,
 } from '@nestjs/common';
+import { ChannelExceptionFilter } from './channel-exception.filter';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 
 @Controller('channel')
+@UseFilters(new ChannelExceptionFilter())
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
