@@ -22,8 +22,51 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
-  it('/channel (GET)', () => {
-    return request(app.getHttpServer()).get('/channel').expect(200).expect([]);
+  it('Channel CRUD', async () => {
+    const server = app.getHttpServer();
+    const channelName = 'Science Channel';
+    const newChannelName = 'Science';
+
+    await request(server).get('/channel').expect(200).expect([]);
+
+    await request(server)
+      .post('/channel')
+      .send({
+        name: channelName,
+      })
+      .expect(201);
+
+    await request(server)
+      .post('/channel')
+      .send({
+        name: channelName,
+      })
+      .expect(400);
+
+    const id = await request(server)
+      .get('/channel')
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0].name).toEqual(channelName);
+        return response.body[0].id;
+      });
+    console.log(id);
+    await request(server)
+      .patch(`/channel/${id}`)
+      .send({ name: newChannelName })
+      .expect(200);
+
+    await request(server)
+      .get(`/channel/${id}`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.name).toEqual(newChannelName);
+      });
+
+    await request(server).del(`/channel/${id}`).expect(200);
+
+    await request(server).get('/channel').expect(200).expect([]);
   });
 
   afterAll(async () => {
