@@ -5,6 +5,7 @@ import {
   Body,
   Patch,
   Param,
+  Put,
   Delete,
   UseFilters,
 } from '@nestjs/common';
@@ -33,11 +34,6 @@ export class ChannelController {
     return this.channelService.findOne(+id);
   }
 
-  @Get(':id/articles')
-  findArticles(@Param('id') id: string) {
-    return this.channelService.findOne(+id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto) {
     return this.channelService.update(+id, updateChannelDto);
@@ -46,5 +42,18 @@ export class ChannelController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.channelService.remove(+id);
+  }
+
+  @Put(':id/postArticle/:articleId')
+  addArticles(@Param('id') id: string, @Param('articleId') articleId: string) {
+    return this.channelService.addArticle(+id, +articleId);
+  }
+
+  @Put(':id/unpostArticle/:articleId')
+  removeArticles(
+    @Param('id') id: string,
+    @Param('articleId') articleId: string,
+  ) {
+    return this.channelService.removeArticle(+id, +articleId);
   }
 }

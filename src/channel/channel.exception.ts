@@ -9,3 +9,8 @@ export class ChannelExistsException extends ChannelException {
     super('Channel with given name already exists');
   }
 }
+export class ArticleNotFoundException extends ChannelException {
+  constructor() {
+    super('Cannot add a non-existent article to the channel');
+  }
+}

@@ -6,7 +6,7 @@ import { AppModule } from './../src/app.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -15,14 +15,18 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterEach(async () => {
+    await app.close();
+  });
+
+  test('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
       .expect('Hello World!');
   });
 
-  it('Channel CRUD', async () => {
+  test('Channel CRUD', async () => {
     const server = app.getHttpServer();
     const channelName = 'Science Channel';
     const newChannelName = 'Science';
@@ -51,7 +55,7 @@ describe('AppController (e2e)', () => {
         expect(response.body[0].name).toEqual(channelName);
         return response.body[0].id;
       });
-    console.log(id);
+
     await request(server)
       .patch(`/channel/${id}`)
       .send({ name: newChannelName })
@@ -69,7 +73,59 @@ describe('AppController (e2e)', () => {
     await request(server).get('/channel').expect(200).expect([]);
   });
 
-  afterAll(async () => {
-    await app.close();
+  test('Adding and removing articles to a channel', async () => {
+    const server = app.getHttpServer();
+    const channelName = 'Science Channel';
+    const articleUrl =
+      'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find';
+
+    const channelId = await request(server)
+      .post('/channel')
+      .send({
+        name: channelName,
+      })
+      .expect(201)
+      .then((response) => response.body.id);
+
+    const articleId = await request(server)
+      .post('/article')
+      .send({
+        url: articleUrl,
+      })
+      .expect(201)
+      .then((response) => response.body.id);
+
+    await request(server)
+      .put(`/channel/${channelId}/postArticle/${articleId}`)
+      .expect(200);
+    // Idempotency: should have no effect
+    await request(server)
+      .put(`/channel/${channelId}/postArticle/${articleId}`)
+      .expect(200);
+
+    await request(server)
+      .get(`/channel/${channelId}`)
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles).toHaveLength(1);
+        expect(articles[0].id).toEqual(articleId);
+      });
+
+    await request(server)
+      .put(`/channel/${channelId}/unpostArticle/${articleId}`)
+      .expect(200);
+
+    await request(server)
+      .put(`/channel/${channelId}/unpostArticle/${articleId}`)
+      .expect(200);
+
+    await request(server)
+      .get(`/channel/${channelId}`)
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles).toHaveLength(0);
+      });
   });
 });

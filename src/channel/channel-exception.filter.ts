@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import {
+  ArticleNotFoundException,
   ChannelException,
   ChannelNotFoundException,
 } from './channel.exception';
@@ -24,7 +25,10 @@ export class ChannelExceptionFilter implements ExceptionFilter {
   }
 
   private mapExceptionSubTypeToStatusCode(exception: ChannelException) {
-    if (exception instanceof ChannelNotFoundException) {
+    if (
+      exception instanceof ChannelNotFoundException ||
+      exception instanceof ArticleNotFoundException
+    ) {
       return HttpStatus.NOT_FOUND;
     }
     return HttpStatus.BAD_REQUEST;

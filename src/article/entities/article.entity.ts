@@ -1,21 +1,24 @@
+import { Channel } from '../../channel/entities/channel.entity';
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Article } from '../../article/entities/article.entity';
 
 @Entity()
-export class Channel {
+export class Article {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })
-  name: string;
+  url: string;
+
+  @Column({ nullable: true, default: 'NULL' })
+  wordCount: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -23,7 +26,7 @@ export class Channel {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToMany(() => Article)
+  @ManyToMany(() => Channel)
   @JoinTable()
-  articles: Article[];
+  channels: Channel[];
 }
