@@ -6,6 +6,7 @@ import { ChannelModule } from './channel/channel.module';
 import { Channel } from './channel/entities/channel.entity';
 import { ArticleModule } from './article/article.module';
 import { Article } from './article/entities/article.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Article } from './article/entities/article.entity';
       entities: [Channel, Article],
       synchronize: true,
     }),
+    EventEmitterModule.forRoot(),
     ChannelModule,
     ArticleModule,
   ],

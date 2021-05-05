@@ -5,12 +5,15 @@ import { Repository } from 'typeorm';
 import { ArticleExistsException } from './article.exception';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { Article } from './entities/article.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NewArticleAddedEvent } from './events/new-article-added.event';
 
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectRepository(Article)
     private articleRepository: Repository<Article>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(createArticleDto: CreateArticleDto): Promise<Article> {
@@ -20,8 +23,14 @@ export class ArticleService {
     });
 
     try {
-      return await this.articleRepository.save(article);
-      // TODO: schedule a job to calculate word count. Maybe defer saving as well
+      const newArticle = await this.articleRepository.save(article);
+
+      this.eventEmitter.emit(
+        'article.newArticleAdded',
+        new NewArticleAddedEvent(newArticle),
+      );
+
+      return newArticle;
     } catch (error) {
       if (isUniqueConstraintErrorSqlite(error)) {
         throw new ArticleExistsException();
