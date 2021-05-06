@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateChannelDto } from './create-channel.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, MinLength } from 'class-validator';
 
-export class UpdateChannelDto extends PartialType(CreateChannelDto) {}
+export class UpdateChannelDto {
+  @ApiProperty()
+  @IsString()
+  @MinLength(1)
+  name: string;
+}

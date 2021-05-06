@@ -1,6 +1,9 @@
-import { IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, MinLength } from 'class-validator';
 
 export class CreateChannelDto {
-  @IsNotEmpty()
+  @ApiProperty()
+  @IsString()
+  @MinLength(1)
   name: string;
 }
