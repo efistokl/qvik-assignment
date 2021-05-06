@@ -127,5 +127,19 @@ describe('AppController (e2e)', () => {
         const articles = response.body.articles;
         expect(articles).toHaveLength(0);
       });
+
+    await new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        request(server)
+          .get(`/article/${articleId}`)
+          .expect(200)
+          .then((response) => {
+            const wordCount = response.body.wordCount;
+            expect(wordCount).toBeGreaterThan(0);
+            resolve();
+          })
+          .catch((error) => reject(error));
+      }, 3000);
+    });
   });
 });
