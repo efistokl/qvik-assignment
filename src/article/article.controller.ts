@@ -6,7 +6,9 @@ import {
   Param,
   Delete,
   UseFilters,
+  Query,
 } from '@nestjs/common';
+import { ApiQuery } from '@nestjs/swagger';
 import { ArticleExceptionFilter } from './article-exception.filter';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -22,8 +24,28 @@ export class ArticleController {
   }
 
   @Get()
-  findAll() {
-    return this.articleService.findAll();
+  @ApiQuery({
+    name: 'minWordCount',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'maxWordCount',
+    type: Number,
+    required: false,
+  })
+  findByWordCountRange(
+    @Query('minWordCount') minWordCount?: number,
+    @Query('maxWordCount') maxWordCount?: number,
+  ) {
+    if (minWordCount === undefined && maxWordCount === undefined) {
+      return this.articleService.findAll();
+    }
+
+    return this.articleService.findByWordCountRange(
+      +minWordCount || 0,
+      +maxWordCount || 0,
+    );
   }
 
   @Get(':id')
