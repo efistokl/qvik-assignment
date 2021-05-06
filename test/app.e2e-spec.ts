@@ -78,6 +78,7 @@ describe('AppController (e2e)', () => {
     const channelName = 'Science Channel';
     const articleUrl =
       'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find';
+    const wordCountTimeoutMs = 3000;
 
     const channelId = await request(server)
       .post('/channel')
@@ -139,7 +140,7 @@ describe('AppController (e2e)', () => {
             resolve();
           })
           .catch((error) => reject(error));
-      }, 3000);
+      }, wordCountTimeoutMs);
     });
   });
 });
