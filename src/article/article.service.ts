@@ -48,6 +48,7 @@ export class ArticleService {
 
   findByWordCountRange(minWordCount = 0, maxWordCount = 0): Promise<Article[]> {
     return this.articleRepository.find({
+      relations: ['channels'],
       where: (qb) => {
         // eslint-disable-next-line prettier/prettier
         qb.where('wordCount >= :minWordCount', { minWordCount })
@@ -65,7 +66,7 @@ export class ArticleService {
   }
 
   findOne(id: number) {
-    return this.articleRepository.findOne(id);
+    return this.articleRepository.findOne(id, { relations: ['channels'] });
   }
 
   async remove(id: number): Promise<void> {
