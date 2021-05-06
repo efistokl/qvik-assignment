@@ -23,6 +23,10 @@ export class NewArticleAddedListener {
     });
   }
 
+  onModuleDestroy() {
+    this.wordCounterWorkerPool.destroy();
+  }
+
   @OnEvent('article.newArticleAdded')
   async handleNewArticleAdded(event: NewArticleAddedEvent) {
     const { articleId, url } = event;
