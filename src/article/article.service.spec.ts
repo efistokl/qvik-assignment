@@ -57,10 +57,13 @@ describe('ArticleService', () => {
     const dto = new CreateArticleDto();
     dto.url = 'https://testurl.com';
 
-    return service.create(dto).then(() => {
+    return service.create(dto).then((article) => {
       expect(eventEmitter.emit).toHaveBeenCalledWith(
         'article.newArticleAdded',
-        expect.anything(),
+        expect.objectContaining({
+          articleId: article.id,
+          url: dto.url,
+        }),
       );
     });
   });
