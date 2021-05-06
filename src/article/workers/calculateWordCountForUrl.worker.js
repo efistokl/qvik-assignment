@@ -1,6 +1,20 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { parentPort } = require('worker_threads');
+const { parentPort, isMainThread } = require('worker_threads');
 const axios = require('axios');
+const { wordsCount } = require('words-count');
+
+if (!isMainThread) {
+  parentPort.on('message', (url) => {
+    fetchUrlContent(url)
+      .then((htmlContent) => {
+        const wordCount = calculateWordCountHtml(htmlContent);
+        handleWordCountCompleted(wordCount);
+      })
+      .catch((error) => {
+        handleError(error);
+      });
+  });
+}
 
 function handleWordCountCompleted(wordCount) {
   parentPort.postMessage({
@@ -16,12 +30,6 @@ function handleError(error) {
   });
 }
 
-function calculateWordCount(htmlContent) {
-  // TODO: implement html tags stripping
-  // TODO: implement word counting
-  return htmlContent.length;
-}
-
 async function fetchUrlContent(url) {
   return await axios({
     method: 'get',
@@ -32,13 +40,27 @@ async function fetchUrlContent(url) {
   });
 }
 
-parentPort.on('message', (url) => {
-  fetchUrlContent(url)
-    .then((content) => {
-      const wordCount = calculateWordCount(content);
-      handleWordCountCompleted(wordCount);
-    })
-    .catch((error) => {
-      handleError(error);
-    });
-});
+function calculateWordCountHtml(htmlContent) {
+  const body = getBodyInnerHtml(htmlContent);
+  const content = replaceHtmlTagsWithSpaces(body);
+  return calculateWordCount(content);
+}
+
+function calculateWordCount(content) {
+  return wordsCount(content);
+}
+
+function getBodyInnerHtml(htmlContent) {
+  return /<body.*?>([\s\S]*)<\/body>/.exec(htmlContent)[1];
+}
+
+function replaceHtmlTagsWithSpaces(htmlContent) {
+  return htmlContent.replace(/(<([^>]+)>)/gi, ' ');
+}
+
+module.exports = {
+  calculateWordCountHtml,
+  calculateWordCount,
+  getBodyInnerHtml,
+  replaceHtmlTagsWithSpaces,
+};

@@ -38,7 +38,8 @@
     "rxjs": "6.6.6",
     "sqlite3": "5.0.2",
     "swagger-ui-express": "4.1.6",
-    "typeorm": "0.2.32"
+    "typeorm": "0.2.32",
+    "words-count": "2.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "7.6.0",
@@ -69,9 +70,9 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "testRegex": ".*\\.spec\\.(t|j)s$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
