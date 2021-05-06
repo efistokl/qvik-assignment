@@ -8,7 +8,13 @@ import {
   UseFilters,
   Query,
 } from '@nestjs/common';
-import { ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ArticleExceptionFilter } from './article-exception.filter';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -19,6 +25,10 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Post()
+  @ApiCreatedResponse({ description: 'Article created' })
+  @ApiBadRequestResponse({
+    description: 'Validation error or article with given URL exists',
+  })
   create(@Body() createArticleDto: CreateArticleDto) {
     return this.articleService.create(createArticleDto);
   }
@@ -34,6 +44,7 @@ export class ArticleController {
     type: Number,
     required: false,
   })
+  @ApiOkResponse({ description: 'Success' })
   findByWordCountRange(
     @Query('minWordCount') minWordCount?: number,
     @Query('maxWordCount') maxWordCount?: number,
@@ -49,11 +60,14 @@ export class ArticleController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ description: 'Article found' })
+  @ApiNotFoundResponse({ description: 'Article not found' })
   findOne(@Param('id') id: string) {
     return this.articleService.findOne(+id);
   }
 
   @Delete(':id')
+  @ApiOkResponse({ description: 'Article deleted' })
   remove(@Param('id') id: string) {
     return this.articleService.remove(+id);
   }
