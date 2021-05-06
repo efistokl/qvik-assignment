@@ -26,7 +26,7 @@ export class Article {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToMany(() => Channel)
+  @ManyToMany(() => Channel, (channel) => channel.articles)
   @JoinTable()
   channels: Channel[];
 }
