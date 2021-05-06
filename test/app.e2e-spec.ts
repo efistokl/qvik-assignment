@@ -19,11 +19,11 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  test('/ (GET)', () => {
+  test('/healthz (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/healthz')
       .expect(200)
-      .expect('Hello World!');
+      .expect('ok');
   });
 
   test('Channel CRUD', async () => {
