@@ -94,3 +94,19 @@ Channel-Article is a Many-To-Many relation.
   - Add unit/e2e tests for graceful shutdown if word-counting is in progress.
 
   - Consider making "create article" + "word count" a transaction.
+
+## Comparing word counts
+
+Website Word count services compared:
+
+1. This API
+2. https://wordcounter.net/website-word-count
+3. https://www.searchbloom.com/tools/bulk-web-page-word-count-checker/
+
+| Article\Service                                                                              |   1  |   2  |   3  |
+|----------------------------------------------------------------------------------------------|:----:|:----:|:----:|
+| https://medium.com/@denys.pozniak/voice-transcoding-with-kamailio-and-rtpengine-241754a55894 |  468 |  416 |  430 |
+| https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet                             | 1780 | 1752 | 1852 |
+| https://staffeng.com/                                                                        |  382 |  367 |  376 |
+| https://yle.fi/uutiset/osasto/news/at-home_covid_tests_to_hit_shops/11920645                 | 1684 | 1538 | 1580 |
+| https://www3.nhk.or.jp/nhkworld/ja/radio/                                                    |  333 |  361 |    8 |
