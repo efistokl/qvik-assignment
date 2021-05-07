@@ -1,40 +1,16 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# My Mind API - Qvik Assignment
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Assignment description is in REQUIREMENTS.md.
 
-## Installation
-
-```bash
-$ npm install
-```
+Browserable API-UI is available at `/docs` endpoint.
 
 ## Running the app
 
 ```bash
+$ npm install
+
 # development
 $ npm run start
 
@@ -42,8 +18,11 @@ $ npm run start
 $ npm run start:dev
 
 # production mode
+$ npm run build
 $ npm run start:prod
 ```
+
+Navigate to http://localhost:3000/docs to browse Swagger UI
 
 ## Test
 
@@ -58,16 +37,60 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## Notes. Fullfilment of the requirements
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Able to manage channels.
 
-## Stay in touch
+- GET /channel
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- GET /channel/:id
 
-## License
+  Gets the specific channel and also lists the articles for the channel
 
-Nest is [MIT licensed](LICENSE).
+- POST /channel
+
+- PATCH /channel/:id
+
+- DELETE /channel/:id
+
+### Able to manage articles for a channel.
+
+Channel-Article is a Many-To-Many relation.
+
+- PUT /channel/:id/postArticle/:articleId
+
+- PUT ​/channel​/:id​/unpostArticle​/:articleId
+
+### Adding articles and word counting
+
+> When adding articles, only the URL is required. The Application will fetch the URL and calculate the word count (HTML tags stripped). Fetching the URLs and counting the words is to be done in the background after the article URL has been received.
+
+- POST /article
+
+  Returns newly created article object, word counting started in the background
+
+- GET /article/:id
+
+  wordCount property will be set if the word count was completed
+
+### Can search articles within word count ranges e.g. 0-100, 100-500, 0-501.
+
+- GET /article?minWordCount=...&maxWordCount=...
+
+### Example flow
+
+- Create articles and channels using POST /channel, POST /article
+- Bind a few channels and articles using PUT /channel/:id/postArticle/:articleId
+- Check bindings by querying data using GET /channel/:id, GET /article/:id
+- Check word count values by querying articles using GET /article
+- Search for articles by word range using GET /article with query params
+
+## Remaining Issues(?)
+
+- In case the word count fails the current behavior is set to delete the "faulty" article. The "correct" behavior is not defined.
+
+- If the database is changed to something other than in-memory:
+
+  - Add unit/e2e tests for graceful shutdown if word-counting is in progress.
+
+  - Consider making "create article" + "word count" a transaction.
