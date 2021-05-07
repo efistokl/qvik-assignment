@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isUniqueConstraintErrorSqlite } from '../helpers/sqliteErrors.helper';
 import { Brackets, Repository } from 'typeorm';
-import { ArticleExistsException } from './article.exception';
+import {
+  ArticleExistsException,
+  ArticleNotFoundException,
+} from './article.exception';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { Article } from './entities/article.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -65,8 +68,16 @@ export class ArticleService {
     });
   }
 
-  findOne(id: number) {
-    return this.articleRepository.findOne(id, { relations: ['channels'] });
+  async findOne(id: number): Promise<Article> {
+    const article = await this.articleRepository.findOne(id, {
+      relations: ['channels'],
+    });
+
+    if (article === undefined) {
+      throw new ArticleNotFoundException();
+    }
+
+    return article;
   }
 
   async remove(id: number): Promise<void> {
