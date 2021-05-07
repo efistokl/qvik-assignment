@@ -42,8 +42,10 @@ async function fetchUrlContent(url) {
 
 function calculateWordCountHtml(htmlContent) {
   const body = getBodyInnerHtml(htmlContent);
-  const bodyWithScriptsStripped = removeScriptTags(body);
-  const content = replaceHtmlTagsWithSpaces(bodyWithScriptsStripped);
+  const bodyWithScriptsAndStylesRemoved = removeStyleTags(
+    removeScriptTags(body),
+  );
+  const content = replaceHtmlTagsWithSpaces(bodyWithScriptsAndStylesRemoved);
   return calculateWordCount(content);
 }
 
@@ -53,6 +55,13 @@ function calculateWordCount(content) {
 
 function getBodyInnerHtml(htmlContent) {
   return /<body.*?>([\s\S]*)<\/body>/.exec(htmlContent)[1];
+}
+
+function removeStyleTags(htmlContent) {
+  return htmlContent.replace(
+    /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
+    '',
+  );
 }
 
 function removeScriptTags(htmlContent) {
@@ -70,6 +79,7 @@ module.exports = {
   calculateWordCountHtml,
   calculateWordCount,
   getBodyInnerHtml,
+  removeStyleTags,
   removeScriptTags,
   replaceHtmlTagsWithSpaces,
 };
