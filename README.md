@@ -20,6 +20,10 @@ $ npm run start:dev
 # production mode
 $ npm run build
 $ npm run start:prod
+
+# docker
+$ docker build -t qvik-api:test .
+$ docker run --init -p 3000:3000 qvik-api:test
 ```
 
 Navigate to http://localhost:3000/docs to browse Swagger UI
