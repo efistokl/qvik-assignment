@@ -62,33 +62,45 @@ export class ChannelService {
       return;
     }
 
-    await this.channelRepository
-      .createQueryBuilder()
-      .relation(Channel, 'articles')
-      .of(channel)
-      .add(articleId);
+    try {
+      await this.channelRepository
+        .createQueryBuilder()
+        .relation(Channel, 'articles')
+        .of(channel)
+        .add(articleId);
+    } catch (error) {
+      this.transformSqliteException(error);
+    }
   }
 
   async removeArticle(id: number, articleId: number) {
     const channel = await this.findOne(id);
-    await this.channelRepository
-      .createQueryBuilder()
-      .relation(Channel, 'articles')
-      .of(channel)
-      .remove(articleId);
+    try {
+      await this.channelRepository
+        .createQueryBuilder()
+        .relation(Channel, 'articles')
+        .of(channel)
+        .remove(articleId);
+    } catch (error) {
+      this.transformSqliteException(error);
+    }
   }
 
   private async saveChannel(channel: Channel) {
     try {
       return await this.channelRepository.save(channel);
     } catch (error) {
-      if (isUniqueConstraintErrorSqlite(error)) {
-        throw new ChannelExistsException();
-      } else if (isForeignKeyConstraintErrorSqlite(error)) {
-        throw new ArticleNotFoundException();
-      } else {
-        throw error;
-      }
+      this.transformSqliteException(error);
+    }
+  }
+
+  private transformSqliteException(error: Error) {
+    if (isUniqueConstraintErrorSqlite(error)) {
+      throw new ChannelExistsException();
+    } else if (isForeignKeyConstraintErrorSqlite(error)) {
+      throw new ArticleNotFoundException();
+    } else {
+      throw error;
     }
   }
 }
