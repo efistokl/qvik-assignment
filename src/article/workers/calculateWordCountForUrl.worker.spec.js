@@ -3,6 +3,7 @@ const {
   calculateWordCountHtml,
   calculateWordCount,
   getBodyInnerHtml,
+  removeScriptTags,
   replaceHtmlTagsWithSpaces,
 } = require('./calculateWordCountForUrl.worker');
 
@@ -33,6 +34,24 @@ describe('calculateWordCountForUrl worker', () => {
     `;
 
     expect(getBodyInnerHtml(htmlContent).trim()).toBe(bodyContent.trim());
+  });
+
+  test('removeScriptTags', () => {
+    const input = `
+      <h1>Test Content here</h1>
+      <script>Some Content here</script>
+      <p>Lorem ipsum</p>
+      <script src="js/scripts.js"></script>
+    `;
+
+    const expectedResult = `
+      <h1>Test Content here</h1>
+      
+      <p>Lorem ipsum</p>
+      
+    `;
+
+    expect(removeScriptTags(input)).toBe(expectedResult);
   });
 
   test('replaceHtmlTagsWithSpaces', () => {
@@ -87,6 +106,7 @@ describe('calculateWordCountForUrl worker', () => {
         <h1>Test Content here</h1>
         <p>Lorem ipsum</p>
         <script src="js/scripts.js"></script>
+        <script>Words here!</script>
       </body>
       </html>
     `;
