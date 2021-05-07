@@ -64,6 +64,7 @@ function removeStyleTags(htmlContent) {
   );
 }
 
+// https://stackoverflow.com/a/6660315/5801858
 function removeScriptTags(htmlContent) {
   return htmlContent.replace(
     /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
