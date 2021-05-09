@@ -1,0 +1,63 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Run docker containers
+  hosts: dev
+  become: True
+  vars_files:
+  - ../config.yml
+  vars:
+    docker_network_name: qvik-assignment
+    docker_network_subnet: 10.3.1.0/24
+    docker_network_gateway_ip: 10.3.1.2
+    docker_network_oauthproxy_ip: 10.3.1.3
+    docker_network_api_ip: 10.3.1.4
+    oauthproxy_config_folder: /opt/oauthproxy
+  tasks:
+  - name: Ensure folder for repo exists
+    file:
+      path: "{{ oauthproxy_config_folder }}"
+      state: directory
+  - name: Write oauth2-proxy config
+    template: src=../oauth2-proxy/config.cfg.j2 dest={{ oauthproxy_config_folder }}/config.cfg
+  - name: Copy oauth2-proxy authenticated_emails_file
+    copy: src=../oauth2-proxy/authenticated_emails_file dest={{ oauthproxy_config_folder }}/authenticated_emails_file
+
+  - name: Prepare docker network
+    docker_network:
+      name: "{{ docker_network_name }}"
+      ipam_config:
+        - subnet: "{{ docker_network_subnet }}"
+          gateway: "{{ docker_network_gateway_ip }}"
+          iprange: "{{ docker_network_subnet }}"
+      driver_options:
+        com.docker.network.bridge.name: "{{ docker_network_name }}"
+
+  - name: Run oauth container
+    docker_container:
+      name: oauthproxy
+      image: bitnami/oauth2-proxy:7.1.3
+      state: started
+      restart_policy: always
+      entrypoint: oauth2-proxy --config "{{ oauthproxy_config_folder }}/config.cfg"
+      ports:
+      - "443:4180/tcp"
+      networks_cli_compatible: yes
+      network_mode: "{{ docker_network_name }}"
+      networks:
+      - name: "{{ docker_network_name }}"
+        ipv4_address: "{{ docker_network_oauthproxy_ip }}"
+      volumes:
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - "{{ oauthproxy_config_folder }}:{{ oauthproxy_config_folder }}"
+  - name: Run api container
+    docker_container:
+      name: api
+      image: "{{ api_container_image }}"
+      state: started
+      restart_policy: always
+      init: yes
+      networks_cli_compatible: yes
+      network_mode: "{{ docker_network_name }}"
+      networks:
+      - name: "{{ docker_network_name }}"
+        ipv4_address: "{{ docker_network_api_ip }}"
