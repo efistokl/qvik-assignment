@@ -6,6 +6,8 @@ Assignment description is in REQUIREMENTS.md.
 
 Browserable API-UI is available at `/docs` endpoint.
 
+Sample deployment is also available at https://qvik-assignment.efistokl.me/docs/ (with access to qvik.fi/qvik.com gmail users)
+
 ## Running the app
 
 ```bash
